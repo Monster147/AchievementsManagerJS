@@ -137,7 +137,7 @@ dist
 
 !assets/icon/*
 db
-
+common/config.json
 assets/*
 !assets/
 !assets/icon/
