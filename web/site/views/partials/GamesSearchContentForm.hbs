@@ -1,0 +1,11 @@
+<label for="gamesName"> Name: </label>
+<input type="text" id="gamesName" name="name" required> 
+
+<label for="sourceName"> Source: </label>
+<select name="source" id="sourceName" required>
+  <option value="Unknown" {{#unless game.source}}selected{{/unless}}>-- Select a Source --</option>
+  <option value="steam" {{#if (eq game.source "steam")}}selected{{/if}}>Steam</option>
+  <option value="psn" {{#if (eq game.source "psn")}}selected{{/if}}>PSN</option>
+</select>
+
+<input type="submit" class="search-btn mt-2" value="Submit">

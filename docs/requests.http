@@ -1,0 +1,85 @@
+### Get All Games
+GET http://localhost:9000/games HTTP/2
+Content-Type: application/json
+
+### Update a Game by ID
+PUT http://localhost:9000/games/1 HTTP/2
+Content-Type: application/json
+
+{
+    "genre": "Puzzle",
+    "releaseYear": 2014
+}
+
+### Get All Games
+GET http://localhost:9000/games HTTP/2
+Content-Type: application/json
+
+### Get a Game by ID
+GET http://localhost:9000/games/2 HTTP/2
+Content-Type: application/json
+
+### Delete a Game by ID
+DELETE http://localhost:9000/games/2 HTTP/2
+Content-Type: application/json
+
+### Get All Games
+GET http://localhost:9000/games HTTP/2
+Content-Type: application/json
+
+### Add an Achievement to a Game
+POST http://localhost:9000/games/1/achievements/add HTTP/2
+Content-Type: application/json
+
+{
+    "name": "Acquired all Master Sword upgrades",
+    "description": "Collect all the Master Sword upgrades in the game.",
+    "completed": false
+}
+
+### Add an Achievement to a Game
+POST http://localhost:9000/games/1/achievements/add HTTP/2
+Content-Type: application/json
+
+{
+    "name": "Defeated Ganon",
+    "description": "Killed Ganon",
+    "completed": false
+}
+
+### Get a game with achievements completed by ID
+GET http://localhost:9000/games/1/achievements HTTP/2
+Content-Type: application/json
+
+### Mark an Achievement as Completed
+POST http://localhost:9000/games/1/achievements HTTP/2
+Content-Type: application/json
+
+{
+    "achievementName": "Collected all Heart Pieces"
+}
+
+### Search for a Game by Name
+POST http://localhost:9000/games/search HTTP/2
+Content-Type: application/json
+
+{
+    "name": "Assassin's Creed",
+    "source": "Steam"
+}
+
+### Insert a Game
+POST http://localhost:9000/games HTTP/2
+Content-Type: application/json
+
+{
+    "name": "Assassin's Creed Valhalla"
+}
+
+### Get all achievements for a game by ID
+POST  http://localhost:9000/games/search/2208920/achievements HTTP/2
+Content-Type: application/json
+
+{
+    "source": "Steam"
+}

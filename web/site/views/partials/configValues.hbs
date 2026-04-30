@@ -1,0 +1,155 @@
+<section class="config-container">
+    <h2> Update Configuration: </h2>
+    {{#if backupStatus}}
+        <p class="backup-message backup-success">{{backupStatus}}</p>
+    {{/if}}
+    {{#if backupError}}
+        <p class="backup-message backup-error">{{backupError}}</p>
+    {{/if}}
+    <form action="/site/config/update" method="POST">
+        <label for="STEAM_API_KEY">Steam API Key:</label>
+        <input type="text" id="STEAM_API_KEY" name="STEAM_API_KEY" value="{{STEAM_API_KEY}}">
+
+        <label for="STEAM_USERID">Steam User ID:</label>
+        <input type="text" id="STEAM_USERID" name="STEAM_USERID" value="{{STEAM_USERID}}">
+
+        <label for="RETRO_API_KEY">RetroAchievements API Key:</label>
+        <input type="text" id="RETRO_API_KEY" name="RETRO_API_KEY" value="{{RETRO_API_KEY}}">
+
+        <label for="RETRO_USERNAME">RetroAchievements Username:</label>
+        <input type="text" id="RETRO_USERNAME" name="RETRO_USERNAME" value="{{RETRO_USERNAME}}">
+
+        <label for="PSN_API_KEY">PSN API Key:</label>
+        <input type="text" id="PSN_API_KEY" name="PSN_API_KEY" value="{{PSN_API_KEY}}">
+
+        <button type="submit" class="save-btn">Save Config</button>
+    </form>
+
+    <section class="backup-container">
+        <h3>Backup and Restore</h3>
+        <p>Export all data from db and assets as a zip file, or import a backup zip to restore both folders.</p>
+
+        <a href="/site/backup/export" class="save-btn export-btn">Export Backup Zip</a>
+
+        <form action="/site/backup/import" method="POST" enctype="multipart/form-data" class="import-form">
+            <label for="backupZip">Import Backup Zip:</label>
+            <input type="file" id="backupZip" name="backupZip" accept=".zip" required>
+            <button type="submit" class="save-btn import-btn">Import Backup Zip</button>
+        </form>
+    </section>
+
+    <style>
+        .config-container {
+            background-color: #121212;
+            color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            max-width: 1200px;
+            margin: 20px auto;
+        }
+
+        .config-container h2 {
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .config-container input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: none;
+            border-radius: 8px;
+            background-color: #1f1f1f;
+            color: #fff;
+        }
+
+        .config-container input:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px #bb86fc;
+        }
+
+        .config-container label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .config-container .save-btn {
+            background-color: #b00020;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        .config-container .save-btn:hover {
+            background-color: #cf0026;
+        }
+
+        .backup-container {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #2c2c2c;
+        }
+
+        .backup-container h3 {
+            margin-bottom: 8px;
+        }
+
+        .backup-container p {
+            margin-bottom: 16px;
+            color: #d7d7d7;
+        }
+
+        .backup-message {
+            margin-bottom: 16px;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .backup-success {
+            background-color: #173b27;
+            color: #89e8b6;
+        }
+
+        .backup-error {
+            background-color: #431c24;
+            color: #ffb3c0;
+        }
+
+        .import-form {
+            margin-top: 16px;
+        }
+
+        .import-form input[type="file"] {
+            margin-bottom: 14px;
+        }
+
+        .export-btn {
+            display: block;
+            text-align: center;
+            text-decoration: none;
+            margin-bottom: 14px;
+            background-color: #2563eb;
+        }
+
+        .export-btn:hover {
+            background-color: #1d4ed8;
+        }
+
+        .import-btn {
+            background-color: #0f766e;
+        }
+
+        .import-btn:hover {
+            background-color: #0d9488;
+        }
+    </style>
+</section>

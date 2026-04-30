@@ -1,0 +1,60 @@
+<section class="create-game-container">
+    <h2> Create Game: </h2>
+    <form action="/site/games" method="POST">
+        {{> createGameContentForm}}
+    </form>
+    <style>
+        .create-game-container {
+            background-color: #121212;
+            color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            max-width: 600px;
+            margin: 20px auto;
+        }
+
+        .create-game-container h2 {
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .create-game-container input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: none;
+            border-radius: 8px;
+            background-color: #1f1f1f;
+            color: #fff;
+        }
+
+        .create-game-container input:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px #bb86fc;
+        }
+
+        .create-game-container label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .save-btn {
+            background-color: #b00020;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        .save-btn:hover {
+            background-color: #cf0026;
+        }
+    </style>
+</section>

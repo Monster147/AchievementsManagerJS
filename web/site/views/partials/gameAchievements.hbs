@@ -1,0 +1,62 @@
+<h3>Achievements</h3>
+  <ul class="list-unstyled">
+    {{#each game.achievements}}
+      <li class="mb-3">
+        <div class="d-flex align-items-center">
+          {{#if this.icon}}
+            <img 
+              src="{{this.icon}}"
+              alt="{{this.name}} icon"
+              style="max-width: 85px; max-height: 85px; cursor: pointer;"
+              class="achievement-icon me-3{{#unless this.completed}} achievement-icon--locked{{/unless}}"
+              data-achievement-id="{{@index}}"
+            />
+          {{/if}}
+          <div>
+            <strong>{{this.name}}</strong>
+            {{#if this.description}}
+              <p><em>{{this.description}}</em></p>
+            {{/if}}
+          </div>
+          <div class="ms-auto">
+            <form action="/site/games/{{../game.id}}/achievements" method="POST" class="d-inline-block toggle-achievement-form">
+                <input type="hidden" name="achievementName" value="{{this.name}}">
+              <button 
+                type="submit" 
+                class="btn btn-sm fw-bold px-4 {{#if this.completed}}btn-success{{else}}btn-danger{{/if}}"
+                style="width: 180px; height: 40px;"
+              >
+                {{#if this.completed}}Obtained{{else}}Not yet obtained{{/if}}
+              </button>
+            </form>
+          </div>
+        </div>
+      </li>
+    {{/each}}
+  </ul>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.toggle-achievement-form').forEach(form => {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const formData = new URLSearchParams(new FormData(form)); // <- agora será lido como um form "normal"
+
+        const res = await fetch(form.action, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded' // <- importante!
+          },
+          body: formData
+        });
+
+        if (res.ok) {
+          window.location.reload();
+        } else {
+          console.error('Erro ao alternar conquista');
+        }
+      });
+    });
+  });
+</script>

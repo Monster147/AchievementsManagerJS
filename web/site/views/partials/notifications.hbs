@@ -1,0 +1,13 @@
+<h1>Achievement Notifications</h1>
+<ul class="notification-list">
+  {{#each notifications}}
+    <li class="notification-item">
+      <img src="{{this.image}}" alt="Achievement Image" class="notification-image"/>
+      <div class="notification-content">
+        <div class="notification-title">{{this.name}}</div>
+        <div class="notification-game">From: <strong>{{this.game}}</strong></div>
+        <div class="notification-time">{{this.time}}</div>
+      </div>
+    </li>
+  {{/each}}
+</ul>

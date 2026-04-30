@@ -1,0 +1,91 @@
+<label for="name">Game Id</label>
+<input type="text" name="gameid" value="{{game.gameid}}">
+
+
+<!-- Editable Name -->
+<label for="name">Game Name</label>
+<input type="text" name="name" value="{{game.name}}" required>
+
+
+<!-- Editable Genre -->
+<label for="genre">Genre</label>
+<select name="genre" id="genre" required>
+  {{!-- Garante que há sempre uma opção por defeito --}}
+  <option value="Unknown" {{#unless game.genre}}selected{{/unless}}>-- Select a Genre --</option>
+
+  {{#each genres}}
+    <option value="{{this}}" {{#if (eq this ../game.genre)}}selected{{/if}}>{{this}}</option>
+  {{/each}}
+</select>
+
+
+<!-- Editable Platform -->
+<label for="platform">Platform</label>
+<select name="platform" id="platform" required>
+  <option value="Unknown" {{#unless game.platform}}selected{{/unless}}>-- Select a Platform --</option>
+
+  <!-- PC -->
+  <option value="PC" {{#if (eq game.platform "PC")}}selected{{/if}}>PC</option>
+
+  <!-- PlayStation -->
+  <option value="Playstation 1" {{#if (eq game.platform "Playstation 1")}}selected{{/if}}>Playstation 1</option>
+  <option value="Playstation 2" {{#if (eq game.platform "Playstation 2")}}selected{{/if}}>Playstation 2</option>
+  <option value="Playstation 3" {{#if (eq game.platform "Playstation 3")}}selected{{/if}}>Playstation 3</option>
+  <option value="Playstation 4" {{#if (eq game.platform "Playstation 4")}}selected{{/if}}>Playstation 4</option>
+  <option value="Playstation 5" {{#if (eq game.platform "Playstation 5")}}selected{{/if}}>Playstation 5</option>
+  <option value="Playstation Portable" {{#if (eq game.platform "Playstation Portable")}}selected{{/if}}>Playstation Portable (PSP)</option>
+  <option value="Playstation Vita" {{#if (eq game.platform "Playstation Vita")}}selected{{/if}}>Playstation Vita</option>
+
+  <!-- Nintendo -->
+  <option value="Nintendo DS" {{#if (eq game.platform "Nintendo DS")}}selected{{/if}}>Nintendo DS</option>
+  <option value="Nintendo 3DS" {{#if (eq game.platform "Nintendo 3DS")}}selected{{/if}}>Nintendo 3DS</option>
+  <option value="Nintendo Switch" {{#if (eq game.platform "Nintendo Switch")}}selected{{/if}}>Nintendo Switch</option>
+  <option value="Game Boy" {{#if (eq game.platform "Game Boy")}}selected{{/if}}>Game Boy</option>
+  <option value="Game Boy Color" {{#if (eq game.platform "Game Boy Color")}}selected{{/if}}>Game Boy Color</option>
+  <option value="Game Boy Advance" {{#if (eq game.platform "Game Boy Advance")}}selected{{/if}}>Game Boy Advance</option>
+  <option value="GameCube" {{#if (eq game.platform "GameCube")}}selected{{/if}}>GameCube</option>
+  <option value="Nintendo 64" {{#if (eq game.platform "Nintendo 64")}}selected{{/if}}>Nintendo 64</option>
+  <option value="Super Nintendo" {{#if (eq game.platform "Super Nintendo")}}selected{{/if}}>Super Nintendo</option>
+  <option value="NES" {{#if (eq game.platform "NES")}}selected{{/if}}>NES</option>
+  <option value="Wii" {{#if (eq game.platform "Wii")}}selected{{/if}}>Wii</option>
+  <option value="Wii U" {{#if (eq game.platform "Wii U")}}selected{{/if}}>Wii U</option>
+
+  <!-- Xbox -->
+  <option value="Xbox" {{#if (eq game.platform "Xbox")}}selected{{/if}}>Xbox</option>
+  <option value="Xbox 360" {{#if (eq game.platform "Xbox 360")}}selected{{/if}}>Xbox 360</option>
+  <option value="Xbox One" {{#if (eq game.platform "Xbox One")}}selected{{/if}}>Xbox One</option>
+  <option value="Xbox Series X" {{#if (eq game.platform "Xbox Series X")}}selected{{/if}}>Xbox Series X</option>
+</select>
+
+
+<!-- Editable Release Year -->
+<label for="releaseyear">Release Year</label>
+<select name="releaseyear" id="releaseyear" required>
+  <option value="Unknown" {{#unless game.releaseyear}}selected{{/unless}}>-- Select a Release Year --</option>
+  {{#each (range 1994 2030)}}
+    <option value="{{this}}" {{#if (eq ../game.releaseyear this)}}selected{{/if}}>{{this}}</option>
+  {{/each}}
+</select>
+
+
+<!-- Editable Source -->
+<label for="source">Source</label>
+<select name="source" id="source" required>
+  <option value="Unknown" {{#unless game.source}}selected{{/unless}}>-- Select a Source --</option>
+  <option value="steam" {{#if (eq game.source "steam")}}selected{{/if}}>Steam</option>
+  <option value="retroachievements" {{#if (eq game.source "retroachievements")}}selected{{/if}}>RetroAchievements</option>
+  <option value="psn" {{#if (eq game.source "psn")}}selected{{/if}}>PSN</option>
+</select>
+
+
+<!-- Editable Cover URL -->
+<label for="cover">Cover URL
+  <small style="font-weight: normal; display: block; margin-top: 5px; color: #666;">
+    Paste a desktop or phone image URL. The image will be automatically downloaded and saved locally.
+  </small>
+</label>
+<input type="text" name="cover" value="{{game.cover}}" placeholder="https://example.com/image.jpg" required>
+
+
+<!-- Submit Button -->
+<button type="submit" class="save-btn">Save Changes</button>

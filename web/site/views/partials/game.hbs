@@ -1,0 +1,71 @@
+<section class="container p-2">
+  <h2>Game Details</h2>
+
+  <div class="text-center mb-3">
+    <img 
+      src="{{game.cover}}" 
+      alt="Cover of {{game.name}}" 
+      style="max-width: 200px; height: auto;"
+    />
+  </div>
+
+  <p><strong>Game ID:</strong> {{game.gameid}}</p>
+  <p><strong>Name:</strong> {{game.name}}</p>
+  <p><strong>Genre:</strong> {{game.genre}}</p>
+  <p><strong>Platform:</strong> {{game.platform}}</p>
+  <p><strong>Release Year:</strong> {{game.releaseyear}}</p>
+  <p><strong>Source:</strong> {{game.source}}</p>
+
+  <div class="game-entry">
+    {{#unless (includes game.source "PSN")}}
+    <form method="POST" action="/site/games/{{game.id}}/toggle-sync" style="display:inline;">
+      <button type="submit" class="btn {{#if game.synchronize}}btn-warning{{else}}btn-primary{{/if}}">
+        {{#if game.synchronize}}Desativar Sincronização{{else}}Ativar Sincronização{{/if}}
+      </button>
+    </form>
+    {{/unless}}
+  </div>
+
+  <hr />
+
+  <p><strong>Progress:</strong> {{unlocked}} / {{total}} achievements</p>
+
+  <div class="progress mb-3" style="height: 25px; position: relative;">
+  <div 
+    class="progress-bar bg-success" 
+    role="progressbar" 
+    style="width: {{percent}}%;" 
+    aria-valuenow="{{percent}}" 
+    aria-valuemin="0" 
+    aria-valuemax="100">
+  </div>
+    <span 
+      class="position-absolute top-50 start-50 translate-middle fw-bold"
+      style="color: {{#if (lt percent 50)}}black{{else}}white{{/if}};">
+      {{percent}}%
+    </span>
+  </div>
+
+  <div class="d-flex flex-wrap gap-2 mb-3">
+    
+    <form action="/site/games/{{game.id}}/search/{{game.gameid}}/achievements" method="POST">
+      <input type="hidden" name="source" value="{{game.source}}">
+      {{#if game.achievements.length}}
+        <button type="submit" class="btn btn-warning">Refresh Achievements</button>
+      {{else}}
+        <button type="submit" class="btn btn-success">Get Achievements</button>
+      {{/if}}
+    </form>
+
+    <!-- Delete Game -->
+    <form action="/site/games/{{game.id}}/delete" method="POST">
+      <button type="submit" class="btn btn-danger">Delete Game</button>
+    </form>
+
+    <!-- Back -->
+    <a href="/site/games" class="btn btn-secondary">Back to Games</a>
+  </div>
+
+  {{> gameAchievements}}
+
+</section>
