@@ -61,6 +61,13 @@
     <form action="/site/games/{{game.id}}/delete" method="POST">
       <button type="submit" class="btn btn-danger">Delete Game</button>
     </form>
+    
+    <!-- Delete Achievemtens -->
+    {{#if game.achievements.length}}
+    <form action="/site/games/{{game.id}}/delete-achievements" method="POST">
+      <button type="submit" class="btn btn-danger">Delete Achievements</button>
+    </form>
+    {{/if}}
 
     <!-- Back -->
     <a href="/site/games" class="btn btn-secondary">Back to Games</a>

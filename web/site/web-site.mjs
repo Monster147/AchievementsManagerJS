@@ -39,7 +39,8 @@ export default function init(gamesServices) {
         toggleAchievementCompleted: processRequest(local_toggleAchievementCompleted),
         searchGamesByName: processRequest(local_searchGamesByName),
         getAchievements: processRequest(local_getAchievements),
-        toggleSynchronize: processRequest(local_toggleSynchronize)
+        toggleSynchronize: processRequest(local_toggleSynchronize),
+        deleteAchievements: processRequest(local_deleteAchievements)
     };
   
     function processRequest(operation){
@@ -134,6 +135,15 @@ export default function init(gamesServices) {
             }
             const globalPercent = totalAchievements > 0 ? ((unlockedAchievements / totalAchievements)* 100).toFixed(2) : "0.00";
             res.render("games-view", { games, totalAchievements, unlockedAchievements, globalPercent, totalGames, totalGamesWithAchievements});
+        });
+    }
+
+    function local_deleteAchievements(req, res) {
+        const id = req.params.id;
+        console.log("Deleting achievements for game with ID:", id);
+        const deletePromise = gamesServices.deleteAchievements(id);
+        return deletePromise.then(() => {
+            res.redirect("/site/games/" + id);
         });
     }
 

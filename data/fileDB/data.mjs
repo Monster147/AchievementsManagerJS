@@ -12,7 +12,8 @@ export default function init(){
         getAchievements,  
         toggleAchievementCompleted,
         getGameProgress,
-        getGameWithProgress
+        getGameWithProgress,
+        deleteAchievements
     };
 
 
@@ -56,13 +57,12 @@ export default function init(){
   }
 
   async function deleteGame(id) {
-     const games = await readTable('games', []);
+    const games = await readTable('games', []);
     const idx = games.findIndex(g => g.id == id);
     if (idx === -1) return false;
 
     const { gameid, cover } = games[idx];
     
-    // Delete associated cover image if it's local
     if (cover && !cover.startsWith('http')) {
       deleteLocalImage(cover);
     }
@@ -70,12 +70,10 @@ export default function init(){
     games.splice(idx, 1);
     await writeTable('games', games);
 
-    // Delete related achievements
     let achievements = await readTable('achievements', []);
     achievements = achievements.filter(a => a.game_id != gameid);
     await writeTable('achievements', achievements);
 
-    // Delete related progress
     let progress = await readTable('game_progress', []);
     progress = progress.filter(p => p.game_id != gameid);
     await writeTable('game_progress', progress);
@@ -86,7 +84,7 @@ export default function init(){
   async function addAchievementsToGame(gameid, achievements) {
     const db = await readTable('achievements', []);
     for (const ach of achievements) {
-      if (db.some(a => a.game_id == gameid && a.name == ach.name)) continue;
+      if (db.some(a => a.game_id == gameid && a.apiname == ach.apiname)) continue;
       db.push({ ...ach, game_id: gameid, completed: false });
     }
     await writeTable('achievements', db);
@@ -95,6 +93,12 @@ export default function init(){
   async function getAchievements(gameid) {
     const db = await readTable('achievements', []);
     return db.filter(a => a.game_id == gameid);
+  }
+
+  async function deleteAchievements(gameid) {
+    let achievements = await readTable('achievements', []);
+    achievements = achievements.filter(a => a.game_id != gameid);
+    await writeTable('achievements', achievements);
   }
 
   async function toggleAchievementCompleted(gameid, achievementName) {

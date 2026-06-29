@@ -170,6 +170,8 @@ if(gamesAPI && gamesSite && backupSite) {
   app.post("/games/:id/achievements", gamesAPI.toggleAchievementCompleted);
   app.post("/site/games/:id/achievements", gamesSite.toggleAchievementCompleted);
 
+  app.post("/site/games/:id/delete-achievements", gamesSite.deleteAchievements);
+
   app.use("/site/notifications", gamesSite.showNotifications);
 
   app.post('/site/games/:id/toggle-sync', gamesSite.toggleSynchronize);
