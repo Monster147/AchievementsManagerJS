@@ -73,7 +73,6 @@ export default function init(gamesData, searchData) {
     }
 
     async function deleteAchievements(gameId) {
-        console.log("Deleting achievements for game with ID (services):", gameId);
         const game = await gamesData.getGame(gameId)
         if (!game) return Promise.reject(errors.GAME_NOT_FOUND(gameId))
         return gamesData.deleteAchievements(game.gameid)

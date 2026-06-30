@@ -104,7 +104,7 @@ export async function syncSteamAchievements(gameId, appId){
     for (const ach of achievements) {
         const shouldBeCompleted = achievedSet.has(ach.apiname);
         if (ach.completed !== shouldBeCompleted) {
-            await gamesServices.toggleAchievementCompleted(gameId, ach.name);
+            await gamesServices.toggleAchievementCompleted(gameId, ach.apiname || ach.name);
             if (shouldBeCompleted) {
                 newlyUnlocked.push({
                     achievementName: ach.name,

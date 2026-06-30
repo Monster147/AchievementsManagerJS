@@ -14,7 +14,20 @@ function getTableFile(table) {
   return path.join(DB_DIR, `${table}.json`);
 }
 
-const writeLocks = {};
+const locks = {};
+
+async function withLock(file, fn) {
+  const prev = locks[file] || Promise.resolve();
+  let release;
+  const current = new Promise(r => (release = r));
+  locks[file] = prev.then(() => current);
+  await prev; // espera a nossa vez
+  try {
+    return await fn();
+  } finally {
+    release();
+  }
+}
 
 async function readTable(table, defaultData = []) {
   ensureDirExists(DB_DIR);
@@ -30,21 +43,26 @@ async function readTable(table, defaultData = []) {
 async function writeTable(table, data) {
   ensureDirExists(DB_DIR);
   const file = getTableFile(table);
-
-  if (!writeLocks[file]) writeLocks[file] = Promise.resolve();
-  const prev = writeLocks[file];
-  let resolve;
-  writeLocks[file] = new Promise(r => resolve = r);
-
-  try {
-    await prev;
+  return withLock(file, async () => {
     await fs.writeFile(file, JSON.stringify(data, null, 2), 'utf-8');
-  } catch (err) {
-    console.error('Error writing', file, err);
-    throw err;
-  } finally {
-    resolve();
-  }
+  });
 }
 
-export { readTable, writeTable };
+async function updateTable(table, mutator, defaultData = []) {
+  ensureDirExists(DB_DIR);
+  const file = getTableFile(table);
+  return withLock(file, async () => {
+    let data;
+    try {
+      data = JSON.parse(await fs.readFile(file, 'utf-8'));
+    } catch {
+      data = defaultData;
+    }
+    const out = await mutator(data);
+    const newData = out && Object.prototype.hasOwnProperty.call(out, 'data') ? out.data : data;
+    await fs.writeFile(file, JSON.stringify(newData, null, 2), 'utf-8');
+    return out ? out.result : undefined;
+  });
+}
+
+export { readTable, writeTable, updateTable };

@@ -20,7 +20,7 @@
           </div>
           <div class="ms-auto">
             <form action="/site/games/{{../game.id}}/achievements" method="POST" class="d-inline-block toggle-achievement-form">
-                <input type="hidden" name="achievementName" value="{{this.name}}">
+                <input type="hidden" name="achievementName" value="{{#if this.apiname}}{{this.apiname}}{{else}}{{this.name}}{{/if}}">
               <button 
                 type="submit" 
                 class="btn btn-sm fw-bold px-4 {{#if this.completed}}btn-success{{else}}btn-danger{{/if}}"

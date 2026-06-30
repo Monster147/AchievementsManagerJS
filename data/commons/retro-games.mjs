@@ -83,7 +83,7 @@ export async function syncRetroAchievements(gameArrayId, gameId){
   for (const ach of achievements) {
     const shouldBeCompleted = achievedSet.has(ach.apiname);
     if (ach.completed !== shouldBeCompleted) {
-        await gamesServices.toggleAchievementCompleted(gameArrayId, ach.name);
+        await gamesServices.toggleAchievementCompleted(gameArrayId, ach.apiname || ach.name);
         if (shouldBeCompleted) {
           newlyUnlocked.push({
             achievementName: ach.name,

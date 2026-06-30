@@ -1,4 +1,4 @@
-import { readTable, writeTable } from './db.mjs';
+import { readTable, writeTable, updateTable } from './db.mjs';
 import { downloadAndSaveImage, deleteLocalImage } from '../../common/imageDownloader.mjs';
 
 export default function init(){
@@ -30,19 +30,18 @@ export default function init(){
   }
 
   async function createGame(game) {
-    const games = await readTable('games', []);
     game.id = Date.now().toString();
-    games.push(game);
-    await writeTable('games', games);
+    await updateTable('games', (games) => {
+      games.push(game);
+      return { data: games, result: game };
+    });
     return game;
   }
 
   async function updateGame(id, data) {
     const games = await readTable('games', []);
-    const idx = games.findIndex(g => g.id == id);
-    if (idx === -1) return null;
-
-    const oldGame = games[idx];
+    const oldGame = games.find(g => g.id == id);
+    if (!oldGame) return null;
     
     if (data.cover && data.cover !== oldGame.cover) {
       if (oldGame.cover && !oldGame.cover.startsWith('http')) {
@@ -51,43 +50,49 @@ export default function init(){
       data.cover = await downloadAndSaveImage(data.cover, data.name || oldGame.name);
     }
 
-    games[idx] = { ...games[idx], ...data };
-    await writeTable('games', games);
-    return games[idx];
+    return updateTable('games', (gms) => {
+      const idx = gms.findIndex(g => g.id == id);
+      if (idx === -1) return { data: gms, result: null };
+      gms[idx] = { ...gms[idx], ...data };
+      return { data: gms, result: gms[idx] };
+    });
   }
 
   async function deleteGame(id) {
-    const games = await readTable('games', []);
-    const idx = games.findIndex(g => g.id == id);
-    if (idx === -1) return false;
+    let removed = null;
+    const ok = await updateTable('games', (games) => {
+      const idx = games.findIndex(g => g.id == id);
+      if (idx === -1) return { data: games, result: false };
+      removed = games[idx];
+      if (removed.cover && !removed.cover.startsWith('http')) {
+        deleteLocalImage(removed.cover);
+      }
+      games.splice(idx, 1);
+      return { data: games, result: true };
+    });
+    if (!ok) return false;
 
-    const { gameid, cover } = games[idx];
-    
-    if (cover && !cover.startsWith('http')) {
-      deleteLocalImage(cover);
-    }
-
-    games.splice(idx, 1);
-    await writeTable('games', games);
-
-    let achievements = await readTable('achievements', []);
-    achievements = achievements.filter(a => a.game_id != gameid);
-    await writeTable('achievements', achievements);
-
-    let progress = await readTable('game_progress', []);
-    progress = progress.filter(p => p.game_id != gameid);
-    await writeTable('game_progress', progress);
-
+    const gameid = removed.gameid;
+    await updateTable('achievements', (a) => ({ data: a.filter(x => x.game_id != gameid), result: null }));
+    await updateTable('game_progress', (p) => ({ data: p.filter(x => x.game_id != gameid), result: null }));
     return true;
   }
 
   async function addAchievementsToGame(gameid, achievements) {
-    const db = await readTable('achievements', []);
-    for (const ach of achievements) {
-      if (db.some(a => a.game_id == gameid && a.apiname == ach.apiname)) continue;
-      db.push({ ...ach, game_id: gameid, completed: false });
+    await updateTable('achievements', (db) => {
+      for (const ach of achievements) {
+        if (db.some(a => a.game_id == gameid && a.apiname == ach.apiname)) continue;
+        db.push({ ...ach, game_id: gameid, completed: false });
+      }
+      return { data: db, result: null };
+    });
+
+    await updateTable('game_progress', (progDb) => {
+    if (!progDb.find(p => p.game_id == gameid)) {
+      progDb.push({ game_id: `${gameid}`, completed_achievements: [] });
     }
-    await writeTable('achievements', db);
+    return { data: progDb, result: null };
+  });
   }
 
   async function getAchievements(gameid) {
@@ -96,35 +101,38 @@ export default function init(){
   }
 
   async function deleteAchievements(gameid) {
-    let achievements = await readTable('achievements', []);
-    achievements = achievements.filter(a => a.game_id != gameid);
-    await writeTable('achievements', achievements);
+    await updateTable('achievements', (a) => ({ data: a.filter(x => x.game_id != gameid), result: null }));
   }
 
-  async function toggleAchievementCompleted(gameid, achievementName) {
-    const achDb = await readTable('achievements', []);
-    const achievement = achDb.find(a => a.game_id == gameid && a.name == achievementName);
-    if (!achievement) throw new Error('Achievement not found');
-    achievement.completed = !achievement.completed;
-    await writeTable('achievements', achDb);
+  async function toggleAchievementCompleted(gameid, identifier) {
+    let nowCompleted;
+    let key;
+    await updateTable('achievements', (achDb) => {
+      const achievement = achDb.find(a => a.game_id == gameid && (a.apiname == identifier || a.name == identifier));
+      if (!achievement) throw new Error('Achievement not found');
+      achievement.completed = !achievement.completed;
+      nowCompleted = achievement.completed;
+      key = achievement.apiname || achievement.name;
+      return { data: achDb, result: null };
+    });
 
-    const progDb = await readTable('game_progress', []);
-    let progress = progDb.find(p => p.game_id == gameid);
-    if (!progress) {
-      progress = { game_id: `${gameid}`, completed_achievements: [] };
-      progDb.push(progress);
-    }
-
-    if (achievement.completed) {
-      if (!progress.completed_achievements.includes(achievementName)) {
-        progress.completed_achievements.push(achievementName);
+    await updateTable('game_progress', (progDb) => {
+      let progress = progDb.find(p => p.game_id == gameid);
+      if (!progress) {
+        progress = { game_id: `${gameid}`, completed_achievements: [] };
+        progDb.push(progress);
       }
-    } else {
-      progress.completed_achievements = progress.completed_achievements.filter(a => a != achievementName);
-    }
+      if (nowCompleted) {
+        if (!progress.completed_achievements.includes(key)) {
+          progress.completed_achievements.push(key);
+        }
+      } else {
+        progress.completed_achievements = progress.completed_achievements.filter(a => a != key);
+      }
+      return { data: progDb, result: null };
+    });
 
-    await writeTable('game_progress', progDb);
-    return achievement.completed;
+    return nowCompleted;
   }
 
   async function getGameProgress(gameid) {
@@ -132,8 +140,10 @@ export default function init(){
     let progress = db.find(p => p.game_id == gameid);
     if (!progress) {
       progress = { game_id: `${gameid}`, completed_achievements: [] };
-      db.push(progress);
-      await writeTable('game_progress', db);
+      await updateTable('game_progress', (d) => {
+          if (!d.find(p => p.game_id == gameid)) d.push(progress);
+          return { data: d, result: null };
+      });
     }
     return progress.completed_achievements;
   }
@@ -149,7 +159,7 @@ export default function init(){
       ...game,
       achievements: achievements.map(a => ({
         ...a,
-        completed: completed.includes(a.name)
+        completed: completed.includes(a.apiname || a.name)
       }))
     };
   }
